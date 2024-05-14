@@ -118,5 +118,6 @@ func health(cfg Config) http.Handler {
             httperr := newErrorResponse("directory does not exist", cfg.Dir)
 			encode(w, r, http.StatusBadRequest, httperr)
         }
+        w.WriteHeader(http.StatusOK)
     })
 }
