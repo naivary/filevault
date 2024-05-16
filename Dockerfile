@@ -43,6 +43,10 @@ RUN adduser \
     --no-create-home \
     --uid "${UID}" \
     appuser
+
+RUN mkdir -p /tmp/filevault
+RUN chown appuser:appuser /tmp/filevault
+
 USER appuser
 
 # Copy the executable from the "build" stage.

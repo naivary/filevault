@@ -23,10 +23,25 @@ func main() {
 }
 
 func newFlagset(cfg *Config, getenv func(string) string) *flag.FlagSet {
+    defaultValue := func(key string) string {
+        val := getenv(key)
+        if val != "" {
+            return val
+        }
+        switch key {
+        case "FILEVAULT_HOST":
+            return cfg.Host
+        case "FILEVAULT_PORT":
+            return cfg.Port
+        default:
+            return ""
+        }
+    }
+
 	fs := flag.NewFlagSet("Filevault", flag.ContinueOnError)
 	fs.StringVar(&cfg.Dir, "dir", getenv("FILEVAULT_DIR"), "directory which will be used for storing the files")
-	fs.StringVar(&cfg.Host, "host", getenv("FILEVAULT_HOST"), "host addr on which the http server will run")
-	fs.StringVar(&cfg.Port, "port", getenv("FILEVAULT_PORT"), "port on which the http server will listen")
+	fs.StringVar(&cfg.Host, "host", defaultValue("FILEVAULT_HOST"), "host addr on which the http server will run")
+	fs.StringVar(&cfg.Port, "port", defaultValue("FILEVAULT_PORT"), "port on which the http server will listen")
 	return fs
 }
 
