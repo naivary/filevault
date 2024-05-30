@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -66,7 +67,7 @@ func removeFile(svc FilevaultService) http.Handler {
 			encode(w, r, http.StatusBadRequest, httperr)
 			return
 		}
-        w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
@@ -92,14 +93,14 @@ func uploadFile(svc FilevaultService) http.Handler {
 		defer file.Close()
 		_, _, ok := strings.Cut(header.Filename, ".")
 		if !ok {
-            httperr := newErrorResponse("filename has to be in format of  <name>.<ext>. For examle filevault.json", "")
+			httperr := newErrorResponse("filename has to be in format of  <name>.<ext>. For examle filevault.json", "")
 			encode(w, r, http.StatusBadRequest, httperr)
 			return
 		}
 		dir := r.FormValue("dir")
 		path := filepath.Join(dir, header.Filename)
 		if err := svc.CreateFile(path, file); err != nil {
-            httperr := newErrorResponse(err.Error(), "")
+			httperr := newErrorResponse(err.Error(), "")
 			encode(w, r, http.StatusBadRequest, httperr)
 			return
 		}
@@ -113,11 +114,32 @@ func uploadFile(svc FilevaultService) http.Handler {
 }
 
 func health(cfg Config) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        if ok, err := isDirExisting(cfg.Dir); err != nil  || !ok {
-            httperr := newErrorResponse("directory does not exist", cfg.Dir)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		const testDir = "test"
+		const testFile = "test.md"
+		if ok, err := isDirExisting(cfg.Dir); err != nil || !ok {
+			httperr := newErrorResponse("directory does not exist", cfg.Dir)
 			encode(w, r, http.StatusBadRequest, httperr)
+            return
+		}
+		path := filepath.Join(cfg.Dir, testDir)
+		mode := os.FileMode(0755)
+		if err := os.MkdirAll(path, mode); err != nil {
+			httperr := newErrorResponse("cannot create a directory", path)
+			encode(w, r, http.StatusBadRequest, httperr)
+            return
+		}
+        pathFile := filepath.Join(path, testFile)
+		if _, err := os.Create(pathFile); err != nil {
+			httperr := newErrorResponse("cannot create a file", path)
+			encode(w, r, http.StatusBadRequest, httperr)
+            return
+		}
+        if err := os.RemoveAll(path); err != nil {
+			httperr := newErrorResponse("something went wrong while cleaning up", path)
+			encode(w, r, http.StatusInternalServerError, httperr)
+            return
         }
-        w.WriteHeader(http.StatusOK)
-    })
+		w.WriteHeader(http.StatusOK)
+	})
 }

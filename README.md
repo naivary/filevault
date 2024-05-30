@@ -19,3 +19,14 @@ If after the deletion of the file the directory is empty, the directory will als
 ### `GET /api/v1/health`
 This endpoint allows for an automatic healthcheck of the application which is useful in the context of Docker and Kubernetes.
 
+## Configuration
+The configuration of filevault can be done using environment variables or by flags using the CLI. CLI configuration takes precedence over environment variables if both are set.
+
+### `FILEVAULT_DIR`
+Directory under which the uploaded files will be stored.
+
+### `FILEVAULT_HOST` 
+Host address for the http server to listen to
+
+### `FILEVAULT_PORT`
+Port of the http server to listen to

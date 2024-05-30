@@ -33,13 +33,15 @@ func newFlagset(cfg *Config, getenv func(string) string) *flag.FlagSet {
             return cfg.Host
         case "FILEVAULT_PORT":
             return cfg.Port
+        case "FILEVAULT_DIR":
+            return cfg.Dir
         default:
             return ""
         }
     }
 
 	fs := flag.NewFlagSet("Filevault", flag.ContinueOnError)
-	fs.StringVar(&cfg.Dir, "dir", getenv("FILEVAULT_DIR"), "directory which will be used for storing the files")
+	fs.StringVar(&cfg.Dir, "dir", defaultValue("FILEVAULT_DIR"), "directory which will be used for storing the files")
 	fs.StringVar(&cfg.Host, "host", defaultValue("FILEVAULT_HOST"), "host addr on which the http server will run")
 	fs.StringVar(&cfg.Port, "port", defaultValue("FILEVAULT_PORT"), "port on which the http server will listen")
 	return fs
@@ -60,10 +62,6 @@ func run(
 	fs := newFlagset(&cfg, getenv)
 	fs.SetOutput(stdout)
 	fs.Parse(args[1:])
-
-	if problems := cfg.Valid(); len(problems) > 0 {
-		return fmt.Errorf("configuration is not valid. Problems: %v\n", problems)
-	}
 
 	svc := NewFilevaultService(cfg)
 	httpServer := &http.Server{
