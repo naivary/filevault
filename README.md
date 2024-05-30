@@ -1,6 +1,6 @@
-# Filevault
+# filevault
 
-Filevault is a simple fileserver which is providing an http interface to save, delete and retrieve files.
+filevault is a simple fileserver which is providing an http interface to save, delete and retrieve files.
 
 ## Provided API-Interface
 
