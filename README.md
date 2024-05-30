@@ -22,11 +22,11 @@ This endpoint allows for an automatic healthcheck of the application which is us
 ## Configuration
 The configuration of filevault can be done using environment variables or by flags using the CLI. CLI configuration takes precedence over environment variables if both are set.
 
-### `FILEVAULT_DIR`
+### `FILEVAULT_DIR (-dir)` 
 Directory under which the uploaded files will be stored.
 
-### `FILEVAULT_HOST` 
+### `FILEVAULT_HOST (-host)` 
 Host address for the http server to listen to
 
-### `FILEVAULT_PORT`
+### `FILEVAULT_PORT (-port)`
 Port of the http server to listen to

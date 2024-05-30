@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 )
+const filevault = "filevault"
 
 func main() {
 	ctx := context.Background()
@@ -40,7 +41,7 @@ func newFlagset(cfg *Config, getenv func(string) string) *flag.FlagSet {
         }
     }
 
-	fs := flag.NewFlagSet("Filevault", flag.ContinueOnError)
+	fs := flag.NewFlagSet(filevault, flag.ContinueOnError)
 	fs.StringVar(&cfg.Dir, "dir", defaultValue("FILEVAULT_DIR"), "directory which will be used for storing the files")
 	fs.StringVar(&cfg.Host, "host", defaultValue("FILEVAULT_HOST"), "host addr on which the http server will run")
 	fs.StringVar(&cfg.Port, "port", defaultValue("FILEVAULT_PORT"), "port on which the http server will listen")
